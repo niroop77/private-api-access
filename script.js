@@ -1,0 +1,170 @@
+const accessKey = "M9MO4VGTHydDuDwxqGNBilJH191l7NHVa6EWQt89lD4";
+
+const searchForm = document.getElementById("search-form");
+const searchInput = document.getElementById("search-box-input");
+const searchResults = document.getElementById("search-results");
+
+const prevBtn = document.getElementById("prev-btn");
+const nextBtn = document.getElementById("next-btn");
+
+const historyList = document.getElementById("history-list");
+const themeToggle = document.getElementById("theme-toggle");
+const recommendations = document.querySelectorAll(".tag");
+
+let keyword = "";
+let page = 1;
+let history = [];
+let currentImages = [];
+let currentIndex = 0;
+
+// MODAL ELEMENTS
+const modal = document.getElementById("image-modal");
+const modalImg = document.getElementById("modal-img");
+const modalCaption = document.getElementById("modal-caption");
+const modalClose = document.getElementById("modal-close");
+const modalNext = document.querySelector(".modal-next");
+const modalPrev = document.querySelector(".modal-prev");
+
+// LOAD FROM LOCAL STORAGE
+if(localStorage.getItem("searchHistory")) {
+    history = JSON.parse(localStorage.getItem("searchHistory"));
+}
+
+// SEARCH FUNCTION
+async function searchImages() {
+    keyword = searchInput.value.trim();
+    if(!keyword) return;
+
+    // SAVE HISTORY
+    if(!history.includes(keyword)) {
+        history.unshift(keyword);
+        if(history.length > 10) history.pop(); // max 10
+        localStorage.setItem("searchHistory", JSON.stringify(history));
+    }
+
+    historyList.style.display = "none";
+
+    const url = `https://api.unsplash.com/search/photos?page=${page}&query=${keyword}&client_id=${accessKey}&per_page=12`;
+
+    const response = await fetch(url);
+    const data = await response.json();
+    const results = data.results;
+
+    searchResults.innerHTML = "";
+    currentImages = results;
+
+    results.forEach((photo, index) => {
+        const link = document.createElement("a");
+        const img = document.createElement("img");
+        img.src = photo.urls.small;
+        link.appendChild(img);
+        searchResults.appendChild(link);
+
+        // CLICK TO OPEN MODAL
+        img.addEventListener("click", () => {
+            currentIndex = index;
+            openModal();
+        });
+    });
+
+    // Pagination
+    prevBtn.style.display = page > 1 ? "inline-block" : "none";
+    nextBtn.style.display = results.length === 12 ? "inline-block" : "none";
+}
+
+// SEARCH SUBMIT
+searchForm.addEventListener("submit", e => {
+    e.preventDefault();
+    page = 1;
+    searchImages();
+});
+
+// NEXT & PREVIOUS
+nextBtn.addEventListener("click", () => { page++; searchImages(); });
+prevBtn.addEventListener("click", () => { if(page>1){ page--; searchImages(); }});
+
+// TRENDING TAGS
+recommendations.forEach(tag => {
+    tag.addEventListener("click", () => {
+        searchInput.value = tag.textContent;
+        page = 1;
+        searchImages();
+    });
+});
+
+// LIVE SEARCH HISTORY
+searchInput.addEventListener("input", () => {
+    const query = searchInput.value.toLowerCase();
+    const filtered = history.filter(item => item.toLowerCase().includes(query));
+    if(filtered.length === 0 || query === "") {
+        historyList.style.display = "none";
+        return;
+    }
+    historyList.innerHTML = "";
+    filtered.forEach(item => {
+        const li = document.createElement("li");
+        li.textContent = item;
+        li.addEventListener("click", () => {
+            searchInput.value = item;
+            page = 1;
+            searchImages();
+            historyList.style.display = "none";
+        });
+        historyList.appendChild(li);
+    });
+    historyList.style.display = "block";
+});
+
+// CLICK OUTSIDE TO CLOSE HISTORY
+document.addEventListener("click", e => {
+    if(!searchForm.contains(e.target)) {
+        historyList.style.display = "none";
+    }
+});
+
+// DARK / LIGHT MODE TOGGLE
+themeToggle.addEventListener("click", () => {
+    document.body.classList.toggle("dark");
+    themeToggle.textContent = document.body.classList.contains("dark") ? "☀️" : "🌙";
+});
+
+// MODAL FUNCTIONS
+function openModal() {
+    const photo = currentImages[currentIndex];
+    modal.style.display = "block";
+    modalImg.src = photo.urls.regular;
+    modalCaption.textContent = photo.alt_description || photo.description || "Untitled";
+}
+
+function closeModal() {
+    modal.style.display = "none";
+}
+
+function nextImage() {
+    currentIndex = (currentIndex + 1) % currentImages.length;
+    openModal();
+}
+
+function prevImage() {
+    currentIndex = (currentIndex - 1 + currentImages.length) % currentImages.length;
+    openModal();
+}
+
+// MODAL EVENTS
+modalClose.addEventListener("click", closeModal);
+modalNext.addEventListener("click", nextImage);
+modalPrev.addEventListener("click", prevImage);
+
+// CLOSE MODAL ON CLICK OUTSIDE IMAGE
+modal.addEventListener("click", e => {
+    if(e.target === modal) closeModal();
+});
+
+// OPTIONAL: KEYBOARD NAVIGATION
+document.addEventListener("keydown", e => {
+    if(modal.style.display === "block") {
+        if(e.key === "ArrowRight") nextImage();
+        if(e.key === "ArrowLeft") prevImage();
+        if(e.key === "Escape") closeModal();
+    }
+});

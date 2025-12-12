@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PicFinder - Image Search</title>
+    <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header>
+        <div class="logo">PicFinder</div>
+        <button id="theme-toggle">🌙</button>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section class="hero">
+        <h1>Find Stunning Images Instantly</h1>
+        <p>Search millions of high-quality free photos</p>
+
+        <!-- SEARCH BOX -->
+        <div class="search-container">
+            <form id="search-form">
+                <input id="search-box-input" type="text" placeholder="Search images…" autocomplete="off"/>
+                <button type="submit">Search</button>
+            </form>
+            <!-- Live Search History Dropdown -->
+            <ul id="history-list"></ul>
+        </div>
+
+        <!-- TRENDING TAGS -->
+        <div id="recommendations" class="tags">
+            <span class="tag">Nature</span>
+            <span class="tag">Cars</span>
+            <span class="tag">Animals</span>
+            <span class="tag">Technology</span>
+        </div>
+    </section>
+
+    <!-- RESULTS MASONRY -->
+    <div id="search-results" class="gallery"></div>
+
+    <!-- PAGINATION -->
+    <div id="pagination">
+        <button id="prev-btn" style="display:none;">Previous</button>
+        <button id="next-btn" style="display:none;">Next</button>
+    </div>
+
+    <!-- IMAGE MODAL / LIGHTBOX -->
+    <div id="image-modal" class="modal">
+        <span id="modal-close">&times;</span>
+        <img class="modal-content" id="modal-img">
+        <div id="modal-caption"></div>
+        <a class="modal-prev">&#10094;</a>
+        <a class="modal-next">&#10095;</a>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <p>Developed by Niroop • Powered by Unsplash API</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
