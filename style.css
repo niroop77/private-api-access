@@ -208,24 +208,19 @@ body.dark .tag {
     box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
 }
 
-/* PAGINATION */
-#pagination {
-    text-align: center;
-    margin: 30px 0;
-}
-
-#pagination button {
+/* LOAD MORE BUTTON */
+#load-more-btn {
     padding: 12px 25px;
     font-size: 17px;
     background: #4c3aff;
     color: white;
     border: none;
     border-radius: 8px;
-    margin: 0 10px;
     cursor: pointer;
+    transition: 0.3s;
 }
 
-#pagination button:hover {
+#load-more-btn:hover {
     background: #6454ff;
 }
 
@@ -246,12 +241,13 @@ body.dark .tag {
 .modal-content {
     margin: auto;
     display: block;
-    width: 400px;
-    height: 400px;
-    object-fit: cover; /* ensures image fills box and maintains aspect ratio */
+    max-width: 80vh;
+    max-height: 80vh;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
     border-radius: 12px;
 }
-
 
 #modal-caption {
     margin: 15px auto;

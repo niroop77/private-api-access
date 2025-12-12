@@ -3,9 +3,7 @@ const accessKey = "M9MO4VGTHydDuDwxqGNBilJH191l7NHVa6EWQt89lD4";
 const searchForm = document.getElementById("search-form");
 const searchInput = document.getElementById("search-box-input");
 const searchResults = document.getElementById("search-results");
-
-const prevBtn = document.getElementById("prev-btn");
-const nextBtn = document.getElementById("next-btn");
+const loadMoreBtn = document.getElementById("load-more-btn");
 
 const historyList = document.getElementById("history-list");
 const themeToggle = document.getElementById("theme-toggle");
@@ -31,27 +29,26 @@ if(localStorage.getItem("searchHistory")) {
 }
 
 // SEARCH FUNCTION
-async function searchImages() {
+async function searchImages(append=false) {
     keyword = searchInput.value.trim();
     if(!keyword) return;
 
     // SAVE HISTORY
     if(!history.includes(keyword)) {
         history.unshift(keyword);
-        if(history.length > 10) history.pop(); // max 10
+        if(history.length > 10) history.pop(); 
         localStorage.setItem("searchHistory", JSON.stringify(history));
     }
 
     historyList.style.display = "none";
 
     const url = `https://api.unsplash.com/search/photos?page=${page}&query=${keyword}&client_id=${accessKey}&per_page=12`;
-
     const response = await fetch(url);
     const data = await response.json();
     const results = data.results;
 
-    searchResults.innerHTML = "";
-    currentImages = results;
+    if(!append) searchResults.innerHTML = "";
+    currentImages = append ? currentImages.concat(results) : results;
 
     results.forEach((photo, index) => {
         const link = document.createElement("a");
@@ -62,14 +59,13 @@ async function searchImages() {
 
         // CLICK TO OPEN MODAL
         img.addEventListener("click", () => {
-            currentIndex = index;
+            currentIndex = append ? currentImages.indexOf(photo) : index;
             openModal();
         });
     });
 
-    // Pagination
-    prevBtn.style.display = page > 1 ? "inline-block" : "none";
-    nextBtn.style.display = results.length === 12 ? "inline-block" : "none";
+    // Show or hide Load More button
+    loadMoreBtn.style.display = results.length === 12 ? "inline-block" : "none";
 }
 
 // SEARCH SUBMIT
@@ -79,9 +75,11 @@ searchForm.addEventListener("submit", e => {
     searchImages();
 });
 
-// NEXT & PREVIOUS
-nextBtn.addEventListener("click", () => { page++; searchImages(); });
-prevBtn.addEventListener("click", () => { if(page>1){ page--; searchImages(); }});
+// LOAD MORE
+loadMoreBtn.addEventListener("click", () => {
+    page++;
+    searchImages(true);
+});
 
 // TRENDING TAGS
 recommendations.forEach(tag => {
