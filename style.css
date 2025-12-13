@@ -190,6 +190,8 @@ body.dark footer { background: #1e1e1e; color: #bbb; }
 #search-form button{
 padding: 0 5px !important;
 border-radius: 0px !important;
+background: none !important;
+color: #4c3aff !important;
 }
     /* Show icon */
     .mobile-search-btn {
