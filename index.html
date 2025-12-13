@@ -22,9 +22,24 @@
         <!-- SEARCH BOX -->
         <div class="search-container">
             <form id="search-form">
-                <input id="search-box-input" type="text" placeholder="Search images…" autocomplete="off">
-                <button type="submit">Search</button>
-            </form>
+    <div class="search-input-wrapper">
+        <input
+            id="search-box-input"
+            type="text"
+            placeholder="Search images…"
+            autocomplete="off"
+        />
+
+        <!-- Mobile Search Icon -->
+        <button type="submit" class="mobile-search-btn" aria-label="Search">
+            🔍
+        </button>
+    </div>
+
+    <!-- Desktop Button -->
+    <button type="submit" class="desktop-search-btn">Search</button>
+</form>
+
             <ul id="history-list"></ul>
         </div>
 
